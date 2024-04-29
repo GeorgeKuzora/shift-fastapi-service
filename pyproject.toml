@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "shift-fastapi-service"
+version = "0.1.0"
+description = ""
+authors = ["GeorgiyKuzora <rafale87@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.2"
+fastapi = "0.110.2"
+SQLAlchemy = "2.0.29"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+max-line-length = 79
+extend-ignore = ["E203", "I001", "I005", "R504"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "env",
+    "migrations",
+    "settings.py",
+    "venv",
+    "management"
+]
+max-complexity = 10
+
+[tool.pyright]
+include = []
+exclude = [".pytest_cache",
+    "**/__pycache__",
+]
+pythonVersion = "3.12.2"
+typeCheckingMode = "standard"
+
+[tool.black]
+line-length = 79
