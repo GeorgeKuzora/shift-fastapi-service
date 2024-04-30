@@ -6,7 +6,7 @@ from models import Base, User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-engine = create_engine("sqlite://", echo=True)
+engine = create_engine("sqlite+pysqlite:///sqlite3.db", echo=True)
 
 logger = logging.getLogger(__name__)
 
