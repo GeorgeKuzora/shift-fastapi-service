@@ -24,7 +24,7 @@ def create_fake_data():
         alice = User(
             name="Alice",
             password="password",
-            sallary=10,
+            salary=10,
             next_promotion_date=date(year=2025, month=12, day=12),
         )
         session.add_all([alice])

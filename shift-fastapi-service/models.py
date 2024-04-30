@@ -15,7 +15,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(40))
     password: Mapped[str] = mapped_column(String(50))
-    sallary: Mapped[int] = mapped_column(Integer())
+    salary: Mapped[int] = mapped_column(Integer())
     next_promotion_date: Mapped[date] = mapped_column(Date())
 
     def __repr__(self) -> str:
