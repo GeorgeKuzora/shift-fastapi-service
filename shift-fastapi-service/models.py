@@ -20,3 +20,10 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.name!r})"
+
+    def to_dict(self) -> dict[str, str | int | date]:
+        return {
+            "name": self.name,
+            "salary": self.salary,
+            "next_promotion_date": self.next_promotion_date,
+        }
