@@ -1,9 +1,9 @@
 import logging
 from datetime import date
 
-from exceptions import DatabaseException
+from exceptions import DatabaseException, DataNotFoundException
 from models import Base, User
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 engine = create_engine("sqlite+pysqlite:///sqlite3.db", echo=True)
@@ -37,6 +37,15 @@ def create_fake_data():
             raise DatabaseException from e
 
 
+def get_user_by_id(user_id: int) -> dict[str, str | int | date]:
+    with Session(engine) as session:
+        stmt = select(User).where(User.id == user_id)
+        user = session.scalars(stmt).first()
+        if user is None:
+            logger.info(f"not found user with id: {user_id}")
+            raise DataNotFoundException
+        return user.to_dict()
+
+
 if __name__ == "__main__":
-    generate_schema()
-    create_fake_data()
+    get_user_by_id(1)
