@@ -3,9 +3,10 @@ from datetime import date
 
 from exceptions import DataNotFoundException
 from fastapi import FastAPI, status
+from logs import init_logging
 from repository import get_user_by_id
 
-logging.basicConfig(filename="logs/main.log", level=logging.INFO)
+init_logging()
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
