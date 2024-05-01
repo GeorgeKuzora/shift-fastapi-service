@@ -17,7 +17,7 @@ def not_found() -> dict[str, str]:
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict[str, str]:
     return {"Hello": "World"}
 
 
