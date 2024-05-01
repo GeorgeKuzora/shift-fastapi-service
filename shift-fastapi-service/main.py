@@ -41,7 +41,7 @@ def get_salary_by_user_id(
     return response
 
 
-@app.get("/salary/{user_id}")
+@app.get("/promotion/{user_id}")
 def get_next_promotion_date_by_user_id(
     user_id: int,
 ) -> dict[str, str] | dict[str, str | int | date]:
