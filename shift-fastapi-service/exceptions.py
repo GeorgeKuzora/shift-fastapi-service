@@ -4,3 +4,7 @@ class DatabaseException(Exception):
 
 class DataNotFoundException(Exception):
     pass
+
+
+class LoggingConfigException(Exception):
+    pass
