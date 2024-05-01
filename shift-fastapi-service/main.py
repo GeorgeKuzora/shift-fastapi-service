@@ -31,29 +31,31 @@ def read_root() -> dict[str, str]:
 @app.get("/salary/{user_id}")
 def get_salary_by_user_id(
     user_id: int,
-) -> dict[str, str] | dict[str, str | int | date]:
+) -> Response:
     try:
         user = get_user_by_id(user_id)
     except DataNotFoundException:
         logger.info(f"not found user with id: {user_id}", exc_info=True)
-        return not_found()
-    response = {"user": user.get("name", ""), "salary": user.get("salary", 0)}
-    return response
+        return RedirectResponse(
+            url="/404", status_code=status.HTTP_404_NOT_FOUND
+        )
+    return {"user": user.get("name", ""), "salary": user.get("salary", 0)}
 
 
 @app.get("/promotion/{user_id}")
 def get_next_promotion_date_by_user_id(
     user_id: int,
-) -> dict[str, str] | dict[str, str | int | date]:
+) -> Response:
     try:
         user = get_user_by_id(user_id)
     except DataNotFoundException:
         logger.info(f"not found user with id: {user_id}", exc_info=True)
-        return not_found()
-    response = {
+        return RedirectResponse(
+            url="/404", status_code=status.HTTP_404_NOT_FOUND
+        )
+    return {
         "user": user.get("name", ""),
         "next_promotion_date": user.get(
-            "next_promotion_date", date(year=0, month=1, day=1)
+            "next_promotion_date", date(year=1, month=1, day=1)
         ),
     }
-    return response
