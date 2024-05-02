@@ -47,5 +47,15 @@ def get_user_by_id(user_id: int) -> dict[str, str | int | date]:
         return user.to_dict()
 
 
+def get_user_by_username(username: str) -> dict[str, str | int | date]:
+    with Session(engine) as session:
+        stmt = select(User).where(User.username == username)
+        user = session.scalars(stmt).first()
+        if user is None:
+            logger.info(f"not found user with username: {username}")
+            raise DataNotFoundException
+        return user.to_dict()
+
+
 if __name__ == "__main__":
-    get_user_by_id(1)
+    get_user_by_id("Alice")
