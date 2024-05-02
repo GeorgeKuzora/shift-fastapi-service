@@ -8,3 +8,7 @@ class DataNotFoundException(Exception):
 
 class LoggingConfigException(Exception):
     pass
+
+
+class AuthConfigException(Exception):
+    pass
