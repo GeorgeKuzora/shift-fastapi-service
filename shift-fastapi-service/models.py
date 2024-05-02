@@ -1,8 +1,7 @@
-import logging
 from datetime import date
 
-from sqlalchemy import Date, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import Boolean, Date, Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
@@ -13,17 +12,19 @@ class User(Base):
     __tablename__ = "user_account"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(40))
-    password: Mapped[str] = mapped_column(String(50))
+    username: Mapped[str] = mapped_column(String(50))
+    hashed_password: Mapped[str] = mapped_column(String)
+    email: Mapped[str] = mapped_column(String(50))
     salary: Mapped[int] = mapped_column(Integer())
     next_promotion_date: Mapped[date] = mapped_column(Date())
+    disabled: Mapped[bool] = mapped_column(Boolean, default=False)
 
     def __repr__(self) -> str:
-        return f"User(id={self.id!r}, name={self.name!r})"
+        return f"User(id={self.id!r}, name={self.username!r})"
 
     def to_dict(self) -> dict[str, str | int | date]:
         return {
-            "name": self.name,
+            "name": self.username,
             "salary": self.salary,
             "next_promotion_date": self.next_promotion_date,
         }
