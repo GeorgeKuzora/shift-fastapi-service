@@ -1,0 +1,16 @@
+services:
+  user-service-dev:
+    container_name: user-service-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    env_file: ./.env
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000:8000"
+      - "443:443"
+    volumes:
+      - .:/opt/user_service
