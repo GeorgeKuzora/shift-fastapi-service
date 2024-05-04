@@ -20,7 +20,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String)
 
     def __repr__(self) -> str:
-        return f"User(id={self.id!r}, name={self.username!r})"
+        return f"User(name={self.username!r}, id={self.email!r}, )"
 
     def to_dict(self) -> dict[str, str | int | date]:
         return {
