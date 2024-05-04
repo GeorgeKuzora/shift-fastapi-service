@@ -13,11 +13,11 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(50))
-    hashed_password: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String(50))
     salary: Mapped[int] = mapped_column(Integer())
     next_promotion_date: Mapped[date] = mapped_column(Date())
     disabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    hashed_password: Mapped[str] = mapped_column(String)
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.username!r})"
