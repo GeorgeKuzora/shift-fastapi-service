@@ -20,34 +20,5 @@ async def not_found() -> dict[str, str]:
     return {"message": "Resource Not Found"}
 
 
-@app.get("/salary/{user_id}")
-async def get_salary_by_user_id(
-    user_id: int,
-) -> Response:
-    try:
-        user = get_user_by_id(user_id)
-    except DataNotFoundException as e:
-        logger.info(f"not found user with id: {user_id}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        ) from e
-    return {"user": user.get("name", ""), "salary": user.get("salary", 0)}
 
 
-@app.get("/promotion/{user_id}")
-async def get_next_promotion_date_by_user_id(
-    user_id: int,
-) -> Response:
-    try:
-        user = get_user_by_id(user_id)
-    except DataNotFoundException as e:
-        logger.info(f"not found user with id: {user_id}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        ) from e
-    return {
-        "user": user.get("name", ""),
-        "next_promotion_date": user.get(
-            "next_promotion_date", date(year=1, month=1, day=1)
-        ),
-    }
