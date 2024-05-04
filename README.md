@@ -99,7 +99,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 #### Авторизация и получение токена
 
-Для авторизации и получения токена для пользователя, сделайте POST запрос с данными в формате form-data: username и password, на адрес  `https://127.0.0.1:8000/load_data`.
+Для авторизации и получения токена для пользователя, сделайте POST запрос с данными в формате form-data: username и password, на адрес  `https://127.0.0.1:8000/token`.
 
 #### Получение информации о заплате
 
@@ -129,8 +129,16 @@ docker compose -f docker-compose.prod.yml start
 docker compose -f docker-compose.dev.yml restart
 ```
 
+```shell
+docker compose -f docker-compose.prod.yml restart
+```
+
 #### Остановка
 
 ```shell
 docker compose -f docker-compose.dev.yml stop
+```
+
+```shell
+docker compose -f docker-compose.prod.yml stop
 ```
