@@ -5,9 +5,11 @@ from typing import Annotated
 from app import app
 from exceptions import DataNotFoundException
 from fastapi import Depends, HTTPException, Response, status
+from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordRequestForm
 from repository import get_user_by_id, get_user_by_username
 
+load_dotenv()
 logger = logging.getLogger(__name__)
 
 

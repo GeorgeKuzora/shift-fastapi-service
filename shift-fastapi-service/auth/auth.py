@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Annotated
 
 from exceptions import AuthConfigException
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -11,6 +12,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from repository import get_user_by_username
 
+load_dotenv()
 logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
