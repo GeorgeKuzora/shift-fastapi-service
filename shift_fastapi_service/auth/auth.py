@@ -9,9 +9,12 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from domain import TokenData, User, UserInDB
-from exceptions import AuthConfigException, DataNotFoundException
-from repository import Repository
+from shift_fastapi_service.domain import TokenData, User, UserInDB
+from shift_fastapi_service.exceptions import (
+    AuthConfigException,
+    DataNotFoundException,
+)
+from shift_fastapi_service.repository import Repository
 
 load_dotenv()
 logger = logging.getLogger(__name__)

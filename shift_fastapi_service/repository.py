@@ -5,8 +5,11 @@ from passlib.context import CryptContext
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
-from exceptions import DatabaseException, DataNotFoundException
-from models import Base, User
+from shift_fastapi_service.exceptions import (
+    DatabaseException,
+    DataNotFoundException,
+)
+from shift_fastapi_service.models import Base, User
 
 engine = create_engine("sqlite+pysqlite:///sqlite3.db", echo=True)
 

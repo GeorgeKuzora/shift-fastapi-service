@@ -1,13 +1,17 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, Request, Response, status
 from fastapi.responses import RedirectResponse
 
-from app import app
-from auth.auth import get_current_active_user
-from domain import User, UserNextPromotionDate, UserSalary
-from exceptions import DataNotFoundException
+from shift_fastapi_service.app import app
+from shift_fastapi_service.auth.auth import get_current_active_user
+from shift_fastapi_service.domain import (
+    User,
+    UserNextPromotionDate,
+    UserSalary,
+)
+from shift_fastapi_service.repository import Repository
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +26,7 @@ async def not_found() -> dict[str, str]:
     return {"message": "Resource Not Found"}
 
 
-@app.get("/user/me/", response_model=User)
+@app.get("/user/me", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> User:
@@ -45,3 +49,17 @@ async def get_next_promotion_date_for_current_user(
         current_user.get_next_promotion_date()
     )
     return user_next_promotion_date
+
+
+@app.get("/create_schema")
+async def create_schema() -> Response:
+    db = Repository()
+    db.generate_schema()
+    return Response(status_code=status.HTTP_201_CREATED)
+
+
+@app.get("/load_data")
+async def load_data() -> Response:
+    db = Repository()
+    db.create_fake_data()
+    return Response(status_code=status.HTTP_201_CREATED)

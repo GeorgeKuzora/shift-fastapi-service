@@ -2,7 +2,7 @@ import logging
 import os
 from pathlib import Path
 
-from exceptions import LoggingConfigException
+from shift_fastapi_service.exceptions import LoggingConfigException
 
 LOG_DIR_NAME = "logs"
 MAIN_LOG_NAME = "main.log"

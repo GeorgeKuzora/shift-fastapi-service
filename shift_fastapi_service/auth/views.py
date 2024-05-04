@@ -7,10 +7,13 @@ from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app import app
-from auth.auth import authenticate_user, create_access_token
-from domain import Token
-from repository import Repository
+from shift_fastapi_service.app import app
+from shift_fastapi_service.auth.auth import (
+    authenticate_user,
+    create_access_token,
+)
+from shift_fastapi_service.domain import Token
+from shift_fastapi_service.repository import Repository
 
 load_dotenv()
 logger = logging.getLogger(__name__)
