@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "shift-fastapi-service"
+name = "shift_fastapi_service"
 version = "0.1.0"
 description = ""
 authors = ["GeorgiyKuzora <rafale87@gmail.com>"]
