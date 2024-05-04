@@ -1,0 +1,16 @@
+services:
+  user-service-prod:
+    container_name: user-service-prod
+    build:
+      tags:
+        - "user-service-prod:latest"
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    env_file: ./.env
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000:8000"
+      - "443:443"
