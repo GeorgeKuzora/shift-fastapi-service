@@ -22,9 +22,12 @@ class User(Base):
     def __repr__(self) -> str:
         return f"User(name={self.username!r}, id={self.email!r}, )"
 
-    def to_dict(self) -> dict[str, str | int | date]:
+    def to_dict(self) -> dict:
         return {
-            "name": self.username,
+            "username": self.username,
+            "email": self.email,
             "salary": self.salary,
             "next_promotion_date": self.next_promotion_date,
+            "disabled": self.disabled,
+            "hashed_password": self.hashed_password,
         }
