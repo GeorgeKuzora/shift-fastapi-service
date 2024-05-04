@@ -1,16 +1,17 @@
 import logging
 import os
-from datetime import date, datetime, timedelta, timezone
-from typing import Annotated
+from datetime import datetime, timedelta, timezone
+from typing import Annotated, Literal
 
-from exceptions import AuthConfigException
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel
-from repository import get_user_by_username
+
+from domain import TokenData, User, UserInDB
+from exceptions import AuthConfigException, DataNotFoundException
+from repository import Repository
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -18,43 +19,17 @@ logger = logging.getLogger(__name__)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 env_var = os.environ
+
 SECRET_KEY: str | None = env_var.get("SECRET_KEY")
 ALGORITHM: str | None = env_var.get("ALGORITHM")
-if not SECRET_KEY or ALGORITHM:
-    logger.error("secret key or algorithm was not provided")
-    raise AuthConfigException("secret key or algorithm was not provided")
 
-if ACCESS_TOKEN_EXPIRE_MINUTES := env_var.get("ACCESS_TOKEN_EXPIRE_MINUTES"):
-    try:
-        ACCESS_TOKEN_EXPIRE_MINUTES = int(ACCESS_TOKEN_EXPIRE_MINUTES)
-    except ValueError:
-        logger.error(
-            f"ACCESS_TOKEN_EXPIRE_MINUTES {ACCESS_TOKEN_EXPIRE_MINUTES} is not an integer"
-        )
-        raise AuthConfigException(
-            f"ACCESS_TOKEN_EXPIRE_MINUTES {ACCESS_TOKEN_EXPIRE_MINUTES} is not an integer"
-        )
+if not SECRET_KEY:
+    logger.error("secret key was not provided")
+    raise AuthConfigException("secret key was not provided")
 
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    username: str | None = None
-
-
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    salary: int | None = None
-    next_promotion_date: date | None = None
-    disabled: bool | None = None
-
-
-class UserInDB(User):
-    hashed_password: str
+if not ALGORITHM:
+    logger.error("algorithm was not provided")
+    raise AuthConfigException("algorithm was not provided")
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -70,13 +45,24 @@ def get_password_hash(password) -> str:
     return pwd_context.hash(password)
 
 
-def get_user(db, username: str):
-    user_dict = db(username)
+def get_user(db: Repository, username: str) -> UserInDB:
+    try:
+        user_dict = db.get_user_by_username(username=username)
+    except DataNotFoundException as e:
+        logger.info(
+            f"user with username {username} was not found",
+            exc_info=True,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        ) from e
     return UserInDB(**user_dict)
 
 
-def authenticate_user(db, username: str, password: str):
-    user = get_user(db, username)
+def authenticate_user(
+    db: Repository, username: str, password: str
+) -> UserInDB | Literal[False]:
+    user: UserInDB = get_user(db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -84,32 +70,43 @@ def authenticate_user(db, username: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(
+    data: dict, expires_delta: timedelta | None = None
+) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, key=SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)]
+) -> UserInDB:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        payload: dict[str, str] = jwt.decode(
+            token=token, key=SECRET_KEY, algorithms=[ALGORITHM]
+        )
+        username: str | None = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(get_user_by_username, username=token_data.username)
+    user: UserInDB | None = None
+    if token_data.username:
+        db = Repository()
+        user = get_user(db=db, username=token_data.username)
+    else:
+        raise credentials_exception
     if user is None:
         raise credentials_exception
     return user
@@ -117,7 +114,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
 async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)],
-):
+) -> User:
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
