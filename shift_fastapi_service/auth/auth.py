@@ -48,7 +48,7 @@ def get_password_hash(password) -> str:
 
 def get_user(db: Repository, username: str) -> UserInDB:
     try:
-        user_dict = db.get_user_by_username(username=username)
+        user_dict: dict = db.get_user_by_username(username)
     except DataNotFoundException as e:
         logger.info(
             f"user with username {username} was not found",
@@ -76,9 +76,9 @@ def create_access_token(
 ) -> str:
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = datetime.now(tz=timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, key=SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
