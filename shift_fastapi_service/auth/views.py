@@ -43,6 +43,19 @@ except ValueError:
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
+    """
+    View for logging user in and acquiring OAuth2 token.
+
+    Args:
+        form_data (Annotated[OAuth2PasswordRequestForm, Depends):
+            Username and Password in form-data format
+
+    Raises:
+        HTTPException: HTTP Exception with status HTTP_401_UNAUTHORIZED
+
+    Returns:
+        Token: User token as json object marshaled from Token class
+    """
     db = Repository()
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
