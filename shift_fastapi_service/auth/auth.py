@@ -21,10 +21,8 @@ logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-env_var = os.environ
-
-SECRET_KEY: str | None = env_var.get("SECRET_KEY")
-ALGORITHM: str | None = env_var.get("ALGORITHM")
+SECRET_KEY: str | None = os.environ.get("SECRET_KEY")
+ALGORITHM: str | None = os.environ.get("ALGORITHM")
 
 if not SECRET_KEY:
     logger.error("secret key was not provided")
