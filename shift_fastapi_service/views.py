@@ -17,12 +17,30 @@ logger = logging.getLogger(__name__)
 
 
 @app.exception_handler(404)
-async def not_found_handler(request: Request, exc: Exception):
+async def not_found_handler(
+    request: Request, exc: Exception
+) -> RedirectResponse:
+    """
+    Exception handler for handling 404 error code.
+
+    Args:
+        request (Request): HTTP Request
+        exc (Exception): HTTP Exception with status 404
+
+    Returns:
+        RedirectResponse: Redirects to page /404
+    """
     return RedirectResponse(url="/404")
 
 
 @app.get("/404", status_code=status.HTTP_404_NOT_FOUND)
 async def not_found() -> dict[str, str]:
+    """
+    View for page /404
+
+    Returns:
+        dict[str, str]: json object with "message" field
+    """
     return {"message": "Resource Not Found"}
 
 
@@ -30,6 +48,15 @@ async def not_found() -> dict[str, str]:
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> User:
+    """
+    View to request logged user data.
+
+    Args:
+        current_user (Annotated[User, Depends): User credentials
+
+    Returns:
+        User: Json object obtained by marshaling the User object
+    """
     return current_user
 
 
@@ -37,6 +64,15 @@ async def read_users_me(
 async def get_salary_for_current_user(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UserSalary:
+    """
+    View to request logged user salary data.
+
+    Args:
+        current_user (Annotated[User, Depends): User credentials
+
+    Returns:
+        UserSalary: Json object obtained by marshaling the UserSalary object
+    """
     user_salary: UserSalary = current_user.get_salary()
     return user_salary
 
@@ -48,11 +84,27 @@ async def get_next_promotion_date_for_current_user(
     user_next_promotion_date: UserNextPromotionDate = (
         current_user.get_next_promotion_date()
     )
+    """
+    View to request logged user next promotion date data.
+
+    Args:
+        current_user (Annotated[User, Depends): User credentials
+
+    Returns:
+        UserSalary: Json object obtained by marshaling
+                    the UserNextPromotionDate  object
+    """
     return user_next_promotion_date
 
 
 @app.get("/create_schema")
 async def create_schema() -> Response:
+    """
+    Utility view for generating database schema.
+
+    Returns:
+        Response: HTTP Response with HTTP status 201
+    """
     db = Repository()
     db.generate_schema()
     return Response(status_code=status.HTTP_201_CREATED)
@@ -60,6 +112,12 @@ async def create_schema() -> Response:
 
 @app.get("/load_data")
 async def load_data() -> Response:
+    """
+    Utility view for adding test data for test purposes.
+
+    Returns:
+        Response: HTTP Response with HTTP status 201
+    """
     db = Repository()
     db.create_fake_data()
     return Response(status_code=status.HTTP_201_CREATED)
