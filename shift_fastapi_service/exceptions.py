@@ -6,6 +6,10 @@ class DataNotFoundException(DatabaseException):
     pass
 
 
+class NotUniqueException(DatabaseException):
+    pass
+
+
 class LoggingConfigException(Exception):
     pass
 
