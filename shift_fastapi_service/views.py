@@ -1,16 +1,21 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, Request, Response, status
+from fastapi import Depends, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
 
 from shift_fastapi_service.app import app
-from shift_fastapi_service.auth.auth import get_current_active_user
+from shift_fastapi_service.auth.auth import (
+    get_current_active_user,
+    get_password_hash,
+)
 from shift_fastapi_service.domain import (
     User,
     UserNextPromotionDate,
+    UserNotInDB,
     UserSalary,
 )
+from shift_fastapi_service.exceptions import NotUniqueException
 from shift_fastapi_service.repository import Repository
 
 logger = logging.getLogger(__name__)
@@ -120,4 +125,24 @@ async def load_data() -> Response:
     """
     db = Repository()
     db.create_fake_data()
+    return Response(status_code=status.HTTP_201_CREATED)
+
+
+@app.post(path="/user/create")
+async def create_user(user: UserNotInDB) -> Response:
+    hashed_password: str = get_password_hash(user.plain_password)
+    user_dict = user.to_dict()
+    user_dict["hashed_password":hashed_password]
+
+    db = Repository()
+    try:
+        db.create_user(user_dict)
+    except NotUniqueException:
+        logger.info(
+            f"user {user.username} or user with email {user.email} already exists"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="username or email already exists",
+        )
     return Response(status_code=status.HTTP_201_CREATED)
