@@ -38,6 +38,19 @@ class User(BaseModel):
             next_promotion_date=self.next_promotion_date,
         )
 
+    def to_dict(self) -> dict:
+        return {
+            "username": self.username,
+            "email": self.email,
+            "salary": self.salary,
+            "next_promotion_date": self.next_promotion_date,
+            "disabled": self.disabled,
+        }
+
 
 class UserInDB(User):
     hashed_password: str
+
+
+class UserNotInDB(User):
+    plain_password: str
