@@ -2,7 +2,7 @@ class DatabaseException(Exception):
     pass
 
 
-class DataNotFoundException(Exception):
+class DataNotFoundException(DatabaseException):
     pass
 
 
