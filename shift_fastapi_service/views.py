@@ -81,9 +81,6 @@ async def get_salary_for_current_user(
 async def get_next_promotion_date_for_current_user(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UserNextPromotionDate:
-    user_next_promotion_date: UserNextPromotionDate = (
-        current_user.get_next_promotion_date()
-    )
     """
     View to request logged user next promotion date data.
 
@@ -94,6 +91,9 @@ async def get_next_promotion_date_for_current_user(
         UserSalary: Json object obtained by marshaling
                     the UserNextPromotionDate  object
     """
+    user_next_promotion_date: UserNextPromotionDate = (
+        current_user.get_next_promotion_date()
+    )
     return user_next_promotion_date
 
 
