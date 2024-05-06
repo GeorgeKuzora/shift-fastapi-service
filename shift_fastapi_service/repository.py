@@ -57,7 +57,7 @@ class Repository:
     def get_user_by_username(self, username: str) -> dict:
         with Session(engine) as session:
             stmt = select(User).where(User.username == username)
-            user = session.scalars(stmt).first()
+            user: User | None = session.scalars(stmt).first()
             if user is None:
                 logger.info(f"not found user with username: {username}")
                 raise DataNotFoundException
