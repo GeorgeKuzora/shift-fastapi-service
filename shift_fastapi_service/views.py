@@ -130,6 +130,19 @@ async def load_data() -> Response:
 
 @app.post(path="/user/create")
 async def create_user(user: UserNotInDB) -> Response:
+    """
+    A view for creating a new user in database
+
+    Args:
+        user (UserNotInDB): Json object containing required fields
+
+    Raises:
+        HTTPException: Raises if user with same
+            username or email already exists
+
+    Returns:
+        Response: _description_
+    """
     hashed_password: str = get_password_hash(user.password)
     user_dict = user.to_dict()
     user_dict["hashed_password":hashed_password]
