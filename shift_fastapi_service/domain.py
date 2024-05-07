@@ -53,4 +53,4 @@ class UserInDB(User):
 
 
 class UserNotInDB(User):
-    plain_password: str
+    password: str

@@ -130,7 +130,7 @@ async def load_data() -> Response:
 
 @app.post(path="/user/create")
 async def create_user(user: UserNotInDB) -> Response:
-    hashed_password: str = get_password_hash(user.plain_password)
+    hashed_password: str = get_password_hash(user.password)
     user_dict = user.to_dict()
     user_dict["hashed_password":hashed_password]
 
