@@ -134,7 +134,14 @@ async def load_data() -> Response:
         Response: HTTP Response with HTTP status 201
     """
     db = Repository()
-    db.create_fake_data()
+    try:
+        db.create_fake_data()
+    except DatabaseException as e:
+        logger.error("couldn't commit changes into database", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="couldn't commit changes into database",
+        ) from e
     return Response(status_code=status.HTTP_201_CREATED)
 
 
