@@ -15,7 +15,10 @@ from shift_fastapi_service.domain import (
     UserNotInDB,
     UserSalary,
 )
-from shift_fastapi_service.exceptions import NotUniqueException
+from shift_fastapi_service.exceptions import (
+    DatabaseException,
+    NotUniqueException,
+)
 from shift_fastapi_service.repository import Repository
 
 logger = logging.getLogger(__name__)
@@ -111,7 +114,14 @@ async def create_schema() -> Response:
         Response: HTTP Response with HTTP status 201
     """
     db = Repository()
-    db.generate_schema()
+    try:
+        db.generate_schema()
+    except DatabaseException as e:
+        logger.error("couldn't create database schema", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="couldn't create database schema",
+        ) from e
     return Response(status_code=status.HTTP_201_CREATED)
 
 
