@@ -20,14 +20,14 @@ logger = logging.getLogger(__name__)
 
 class Repository:
 
-    def generate_schema(self):
+    def generate_schema(self) -> None:
         try:
             Base.metadata.create_all(engine)
         except Exception as e:
             logger.critical("Can't create database schema", exc_info=True)
             raise DatabaseException from e
 
-    def create_fake_data(self):
+    def create_fake_data(self) -> None:
         pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         with Session(engine) as session:
             alice = User(
@@ -41,6 +41,11 @@ class Repository:
             session.add_all([alice])
             try:
                 session.commit()
+            except IntegrityError:
+                logger.info(
+                    f"user {alice.username} or user with email {alice.email} already exists"
+                )
+                raise NotUniqueException
             except Exception as e:
                 logger.critical(
                     "can't commit changes into database", exc_info=True
@@ -65,7 +70,7 @@ class Repository:
                 raise DataNotFoundException
             return user.to_dict()
 
-    def create_user(self, user: dict):
+    def create_user(self, user: dict) -> None:
         with Session(engine) as session:
             user_in_db = User(
                 username=user.get("username"),

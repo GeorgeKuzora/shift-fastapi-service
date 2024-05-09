@@ -136,6 +136,12 @@ async def load_data() -> Response:
     db = Repository()
     try:
         db.create_fake_data()
+    except NotUniqueException:
+        logger.info("this user or user with this email already exists")
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="username or email already exists",
+        )
     except DatabaseException as e:
         logger.error("couldn't commit changes into database", exc_info=True)
         raise HTTPException(
