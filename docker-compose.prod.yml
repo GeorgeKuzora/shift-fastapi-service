@@ -8,9 +8,14 @@ services:
       dockerfile: Dockerfile
       target: production
     env_file: ./.env
+    volumes:
+      - user-service-data:/opt/user_service
     restart: on-failure
     stdin_open: true
     tty: true
     ports:
       - "8000:8000"
       - "443:443"
+      
+volumes:
+  user-service-data:
